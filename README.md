@@ -16,14 +16,23 @@ Material & cost estimate — cement (bags/kg), sand (cu.ft/kg), aggregate (cu.ft
 Repair report dashboard — annotated image, measurement cards, material bar chart, priority badge (Low/Medium/High), estimated repair time, and AI-style recommendations
 
 #Extras
+
 📄PDF export — multi-page, page-aware report generation (via jsPDF)
+
 💾 History — reports are saved locally (per-user persistent storage) with thumbnails, searchable and filterable by priority
+
 📍 GPS tagging — attach coordinates to a report
+
 🔊 Voice read-back — reads the report summary aloud (Web Speech API)
+
 🌗 Dark / light theme toggle
+
 🌐 EN / HI language toggle for key labels
+
 📱 Fully responsive — works on phone, tablet, and desktop
+
 🚀 Getting started
+
 Download index.html
 Open it directly in any modern browser (Chrome, Safari, Edge, Firefox) — double-click, or drag it into a browser window
 On mobile, use Use Camera to photograph the hole, or Upload Image for an existing photo
