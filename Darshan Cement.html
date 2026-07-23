@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Darshan Cement AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --concrete-50:#F3F1EC;
+  --concrete-100:#E7E3D9;
+  --concrete-700:#5C584F;
+  --concrete-800:#3A372F;
+  --concrete-900:#242220;
+  --steel-blue:#2F5C6E;
+  --steel-blue-light:#5A93A8;
+  --hazard:#E2572B;
+  --hazard-dark:#B8431F;
+  --tape:#F0B429;
+  --success:#4C8C57;
+  --warn:#D99A2B;
+  --danger:#C24444;
+  --line:rgba(255,255,255,0.08);
+
+  --bg:var(--concrete-900);
+  --bg-raised:#2E2B27;
+  --bg-card:#332F2A;
+  --text:#EFEBE3;
+  --text-dim:#B4AEA2;
+  --border:rgba(255,255,255,0.10);
+  --paper:var(--concrete-50);
+  --shadow:0 8px 24px rgba(0,0,0,0.35);
+}
+html[data-theme="light"]{
+  --bg:var(--concrete-50);
+  --bg-raised:#EAE6DD;
+  --bg-card:#FFFFFF;
+  --text:#242220;
+  --text-dim:#665F53;
+  --border:rgba(36,34,32,0.12);
+  --shadow:0 8px 24px rgba(60,50,30,0.10);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  transition:background .25s ease, color .25s ease;
+  min-height:100vh;
+}
+h1,h2,h3,.display{
+  font-family:'Barlow Condensed',sans-serif;
+  text-transform:uppercase;
+  letter-spacing:0.02em;
+  font-weight:700;
+  margin:0;
+}
+.mono{font-family:'IBM Plex Mono',monospace;}
+a{color:inherit;}
+button{font-family:'Inter',sans-serif;cursor:pointer;}
+::selection{background:var(--hazard);color:#fff;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--concrete-700);border-radius:6px;}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+
+/* ============ NAV ============ */
+header.nav{
+  position:sticky;top:0;z-index:50;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(6px);
+}
+.nav-inner{
+  max-width:1180px;margin:0 auto;padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed';font-weight:700;font-size:20px;letter-spacing:.03em;text-transform:uppercase;}
+.brand-mark{
+  width:34px;height:34px;border-radius:6px;
+  background:repeating-linear-gradient(135deg, var(--hazard) 0 8px, var(--concrete-900) 8px 16px);
+  border:2px solid var(--tape);
+  flex-shrink:0;
+}
+nav.links{display:flex;gap:4px;align-items:center;}
+nav.links button{
+  background:none;border:none;color:var(--text-dim);
+  font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;
+  text-transform:uppercase;letter-spacing:.05em;transition:all .15s;
+}
+nav.links button:hover{color:var(--text);background:var(--bg-raised);}
+nav.links button.active{color:var(--hazard);background:var(--bg-raised);}
+.icon-btn{
+  background:var(--bg-raised);border:1px solid var(--border);color:var(--text);
+  width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all .15s;
+}
+.icon-btn:hover{border-color:var(--hazard);}
+.nav-actions{display:flex;gap:8px;align-items:center;}
+
+/* ============ HERO ============ */
+.hero{
+  position:relative;overflow:hidden;
+  background:
+    linear-gradient(180deg, transparent 60%, var(--bg) 100%),
+    repeating-linear-gradient(0deg, transparent 0 39px, var(--line) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, var(--line) 39px 40px),
+    var(--concrete-900);
+  padding:90px 0 60px;
+  border-bottom:1px solid var(--border);
+}
+html[data-theme="light"] .hero{
+  background:
+    linear-gradient(180deg, transparent 60%, var(--bg) 100%),
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(36,34,32,.06) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(36,34,32,.06) 39px 40px),
+    var(--concrete-50);
+}
+.hero-inner{max-width:1180px;margin:0 auto;padding:0 24px;position:relative;z-index:2;}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  color:var(--tape);font-family:'IBM Plex Mono';font-size:12px;letter-spacing:.12em;
+  text-transform:uppercase;border:1px dashed var(--tape);padding:5px 12px;border-radius:20px;
+  margin-bottom:22px;
+}
+.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--hazard);display:inline-block;}
+.hero h1{
+  font-size:clamp(42px,7vw,84px);line-height:0.96;color:var(--text);margin-bottom:20px;
+}
+.hero h1 .accent{color:var(--hazard);}
+.hero p.lede{
+  font-size:18px;color:var(--text-dim);max-width:600px;line-height:1.6;margin-bottom:34px;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:15px 28px;border-radius:8px;font-weight:700;font-size:15px;
+  text-transform:uppercase;letter-spacing:.04em;border:none;transition:transform .15s, box-shadow .15s;
+}
+.btn-primary{background:var(--hazard);color:#fff;box-shadow:0 6px 0 var(--hazard-dark);}
+.btn-primary:hover{transform:translateY(2px);box-shadow:0 4px 0 var(--hazard-dark);}
+.btn-primary:active{transform:translateY(6px);box-shadow:0 0 0 var(--hazard-dark);}
+.btn-ghost{background:transparent;border:2px solid var(--border);color:var(--text);}
+.btn-ghost:hover{border-color:var(--text-dim);}
+.btn-sm{padding:10px 16px;font-size:13px;}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:50px;}
+.hero-stats{display:flex;gap:36px;flex-wrap:wrap;}
+.hstat b{display:block;font-family:'IBM Plex Mono';font-size:26px;color:var(--tape);}
+.hstat span{font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;}
+
+/* ============ TAPE DIVIDER (signature element) ============ */
+.tape-divider{
+  position:relative;height:56px;overflow:hidden;
+  background:repeating-linear-gradient(90deg, var(--tape) 0 2px, #d9a520 2px 4px);
+  border-top:2px solid var(--concrete-900);border-bottom:2px solid var(--concrete-900);
+}
+.tape-divider .ticks{
+  position:absolute;inset:0;display:flex;align-items:flex-end;
+}
+.tape-divider .tick{flex:1;border-left:1px solid rgba(0,0,0,.35);height:14px;position:relative;}
+.tape-divider .tick.major{height:26px;border-left:2px solid rgba(0,0,0,.55);}
+.tape-divider .tick.major span{
+  position:absolute;top:-16px;left:2px;font-family:'IBM Plex Mono';font-size:10px;color:rgba(0,0,0,.6);
+}
+.tape-divider .center-label{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono';font-weight:600;font-size:12px;letter-spacing:.2em;color:rgba(0,0,0,.55);
+  text-transform:uppercase;background:rgba(0,0,0,0.0);
+}
+
+/* ============ SECTION GENERIC ============ */
+.section{padding:70px 0;}
+.section-head{margin-bottom:40px;max-width:640px;}
+.section-head .label{
+  font-family:'IBM Plex Mono';font-size:12px;color:var(--hazard);letter-spacing:.15em;
+  text-transform:uppercase;margin-bottom:10px;display:block;
+}
+.section-head h2{font-size:clamp(28px,4vw,44px);margin-bottom:14px;}
+.section-head p{color:var(--text-dim);font-size:16px;line-height:1.6;}
+
+/* feature grid */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:26px;
+  transition:transform .18s, border-color .18s;
+}
+.card:hover{transform:translateY(-4px);border-color:var(--steel-blue-light);}
+.card .num{font-family:'IBM Plex Mono';font-size:13px;color:var(--tape);margin-bottom:14px;display:block;}
+.card h3{font-size:20px;text-transform:none;margin-bottom:10px;letter-spacing:0;font-family:'Inter';font-weight:700;}
+.card p{color:var(--text-dim);font-size:14px;line-height:1.55;margin:0;}
+.card .emoji{font-size:28px;margin-bottom:14px;display:block;}
+
+/* ============ WORKFLOW / STEPPER ============ */
+.stepper{display:flex;gap:0;margin-bottom:40px;overflow-x:auto;padding-bottom:4px;}
+.step-pill{
+  display:flex;align-items:center;gap:8px;padding:10px 18px;white-space:nowrap;
+  border-bottom:3px solid var(--border);color:var(--text-dim);font-weight:600;font-size:13px;
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.step-pill .n{
+  width:22px;height:22px;border-radius:50%;background:var(--bg-raised);display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono';font-size:11px;border:1px solid var(--border);
+}
+.step-pill.active{color:var(--hazard);border-color:var(--hazard);}
+.step-pill.active .n{background:var(--hazard);color:#fff;border-color:var(--hazard);}
+.step-pill.done{color:var(--success);}
+.step-pill.done .n{background:var(--success);color:#fff;border-color:var(--success);}
+.step-pill.disabled{opacity:.35;pointer-events:none;}
+
+.panel{
+  background:var(--bg-raised);border:1px solid var(--border);border-radius:16px;padding:32px;
+  box-shadow:var(--shadow);
+}
+.panel + .panel{margin-top:20px;}
+.hidden{display:none !important;}
+
+.dropzone{
+  border:2px dashed var(--border);border-radius:14px;padding:50px 20px;text-align:center;
+  transition:all .2s;cursor:pointer;
+}
+.dropzone:hover, .dropzone.drag{border-color:var(--hazard);background:rgba(226,87,43,.06);}
+.dropzone .dz-icon{font-size:38px;margin-bottom:10px;}
+.dropzone p{color:var(--text-dim);margin:6px 0 0;font-size:14px;}
+.dz-actions{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+
+.canvas-wrap{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:#111;}
+.canvas-wrap canvas{display:block;width:100%;height:auto;cursor:crosshair;touch-action:none;-webkit-user-select:none;user-select:none;}
+.canvas-toolbar{
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px;
+}
+.pill-btn{
+  background:var(--bg-card);border:1px solid var(--border);color:var(--text);
+  padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;display:flex;gap:6px;align-items:center;
+}
+.pill-btn:hover{border-color:var(--steel-blue-light);}
+.pill-btn.active{background:var(--steel-blue);border-color:var(--steel-blue);color:#fff;}
+
+.two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:start;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin-bottom:6px;font-weight:600;}
+.field select, .field input[type=number], .field input[type=text]{
+  width:100%;padding:11px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--bg-card);color:var(--text);font-size:14px;font-family:'IBM Plex Mono';
+}
+.field .hint{font-size:12px;color:var(--text-dim);margin-top:5px;}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{
+  padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);
+  font-size:13px;font-weight:600;color:var(--text-dim);
+}
+.chip.selected{border-color:var(--hazard);color:var(--hazard);background:rgba(226,87,43,.08);}
+
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.badge-low{background:rgba(76,140,87,.15);color:var(--success);}
+.badge-med{background:rgba(217,154,43,.15);color:var(--warn);}
+.badge-high{background:rgba(194,68,68,.15);color:var(--danger);}
+
+/* ============ RESULTS DASHBOARD ============ */
+.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0;}
+.metric{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px;
+}
+.metric .m-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:8px;}
+.metric .m-value{font-family:'IBM Plex Mono';font-size:26px;font-weight:600;color:var(--tape);}
+.metric .m-value small{font-size:14px;color:var(--text-dim);}
+
+.material-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+.material-row:last-child{border-bottom:none;}
+.material-row .m-name{display:flex;align-items:center;gap:10px;font-weight:600;}
+.material-row .swatch{width:14px;height:14px;border-radius:4px;}
+.material-row .m-amt{font-family:'IBM Plex Mono';font-size:15px;}
+.bar-track{height:8px;border-radius:6px;background:var(--bg);overflow:hidden;flex:1;margin:0 16px;}
+.bar-fill{height:100%;border-radius:6px;}
+
+.recommend-box{
+  background:linear-gradient(135deg, rgba(47,92,110,.18), rgba(226,87,43,.10));
+  border:1px solid var(--steel-blue-light);border-radius:12px;padding:20px;margin-top:20px;
+}
+.recommend-box h4{display:flex;align-items:center;gap:8px;font-family:'Inter';text-transform:none;letter-spacing:0;font-size:15px;margin-bottom:10px;}
+.recommend-box ul{margin:0;padding-left:18px;color:var(--text-dim);font-size:14px;line-height:1.7;}
+
+/* ============ HISTORY ============ */
+.history-toolbar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;align-items:center;}
+.history-toolbar input, .history-toolbar select{
+  padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);color:var(--text);font-size:14px;
+}
+.history-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.hist-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.hist-card img{width:100%;height:150px;object-fit:cover;display:block;background:#000;}
+.hist-card .hc-body{padding:16px;}
+.hist-card .hc-date{font-size:12px;color:var(--text-dim);margin-bottom:6px;font-family:'IBM Plex Mono';}
+.hist-card h4{font-size:16px;font-family:'Inter';text-transform:none;letter-spacing:0;margin-bottom:8px;}
+.hist-card .hc-stats{display:flex;gap:14px;font-size:13px;color:var(--text-dim);margin-bottom:10px;}
+.hist-empty{text-align:center;padding:60px 20px;color:var(--text-dim);}
+
+footer{border-top:1px solid var(--border);padding:36px 0;text-align:center;color:var(--text-dim);font-size:13px;}
+
+@media(max-width:900px){
+  .grid3{grid-template-columns:1fr;}
+  .grid4{grid-template-columns:repeat(2,1fr);}
+  .two-col{grid-template-columns:1fr;}
+  .result-grid{grid-template-columns:repeat(2,1fr);}
+  .history-grid{grid-template-columns:1fr;}
+  nav.links{display:none;}
+  .hero{padding:60px 0 40px;}
+}
+.page{display:none;}
+.page.active{display:block;}
+.loader-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--tape);animation:pulse 1s infinite ease-in-out;}
+@keyframes pulse{0%,100%{opacity:.3;}50%{opacity:1;}}
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--bg-card);border:1px solid var(--hazard);color:var(--text);padding:14px 22px;border-radius:10px;
+  box-shadow:var(--shadow);font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .3s;z-index:200;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand"><div class="brand-mark"></div><span>Darshan <span style="color:var(--hazard)">Cement</span> AI</span></div>
+    <nav class="links" id="navLinks">
+      <button data-page="home" class="active">Home</button>
+      <button data-page="measure">Measure</button>
+      <button data-page="history">History</button>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn" id="langBtn" title="Language">EN</button>
+      <button class="icon-btn" id="themeBtn" title="Toggle theme">☀️</button>
+      <button class="btn btn-primary btn-sm" id="navStartBtn">Start Measuring</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HOME PAGE ============ -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow">Computer Vision · On-Site Estimation</span>
+      <h1>Point your phone<br>at the <span class="accent">hole.</span><br>Get the pour.</h1>
+      <p class="lede">Darshan Cement AI turns a single site photo into precise length, width, depth and volume readings — then tells you exactly how much cement, sand and aggregate to order, in seconds.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" id="heroStartBtn">📸 Start Measuring</button>
+        <button class="btn btn-ghost" id="heroHistoryBtn">View Past Reports</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><b>±2–4%</b><span>Sizing accuracy*</span></div>
+        <div class="hstat"><b>&lt;30s</b><span>Photo to report</span></div>
+        <div class="hstat"><b>M10–M30</b><span>Mix grades supported</span></div>
+        <div class="hstat"><b>0</b><span>Extra hardware needed</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="tape-divider">
+    <div class="ticks" id="tapeTicks"></div>
+  </div>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">01 — How it works</span>
+        <h2>Photo in. Repair plan out.</h2>
+        <p>No special equipment. Just a phone camera and something to scale against — an A4 sheet, a coin, or a tape measure already lying in your kit.</p>
+      </div>
+      <div class="grid4" id="howGrid">
+        <div class="card"><span class="num">STEP 1</span><h3>Capture</h3><p>Snap or upload a photo of the hole, crack, or damaged patch that needs filling.</p></div>
+        <div class="card"><span class="num">STEP 2</span><h3>Detect</h3><p>The vision model finds the void's edges and traces its outline automatically.</p></div>
+        <div class="card"><span class="num">STEP 3</span><h3>Calibrate</h3><p>Mark a known reference object once — every pixel is now a real measurement.</p></div>
+        <div class="card"><span class="num">STEP 4</span><h3>Estimate</h3><p>Get length, width, area, volume, and a full material + cost breakdown.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--bg-raised);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">02 — Built for the field</span>
+        <h2>Every feature a site visit needs</h2>
+      </div>
+      <div class="grid3">
+        <div class="card"><span class="emoji">🕳️</span><h3>Irregular shape detection</h3><p>Handles jagged potholes and organic crack shapes, not just clean rectangles.</p></div>
+        <div class="card"><span class="emoji">⚠️</span><h3>Repair priority scoring</h3><p>Automatic Low / Medium / High priority based on size, depth and crack spread.</p></div>
+        <div class="card"><span class="emoji">🧱</span><h3>Mix-grade cement calc</h3><p>M10 through M30 ratios, dry-volume correction, and live cost estimates.</p></div>
+        <div class="card"><span class="emoji">📍</span><h3>GPS site tagging</h3><p>Attach coordinates to every report for multi-site tracking.</p></div>
+        <div class="card"><span class="emoji">🔊</span><h3>Voice read-back</h3><p>Have the report read aloud hands-free while you're still on-site.</p></div>
+        <div class="card"><span class="emoji">📄</span><h3>One-tap PDF export</h3><p>Share a clean, print-ready report with contractors or supervisors instantly.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap" style="text-align:center;">
+      <h2 style="font-size:clamp(26px,4vw,40px);margin-bottom:16px;">Got a hole that needs filling?</h2>
+      <p style="color:var(--text-dim);margin-bottom:28px;">Grab your phone and a sheet of A4 paper. That's the whole kit.</p>
+      <button class="btn btn-primary" id="ctaStartBtn">📸 Start Measuring Now</button>
+    </div>
+  </section>
+</div>
+
+<!-- ============ MEASURE PAGE ============ -->
+<div class="page" id="page-measure">
+  <section class="section" style="padding-top:36px;">
+    <div class="wrap">
+      <div class="section-head" style="margin-bottom:24px;">
+        <span class="label">Measurement Workflow</span>
+        <h2 id="measureTitle">Capture the damaged area</h2>
+      </div>
+
+      <div class="stepper" id="stepper">
+        <div class="step-pill active" data-step="1"><span class="n">1</span>Capture</div>
+        <div class="step-pill" data-step="2"><span class="n">2</span>Detect</div>
+        <div class="step-pill" data-step="3"><span class="n">3</span>Calibrate</div>
+        <div class="step-pill" data-step="4"><span class="n">4</span>Depth</div>
+        <div class="step-pill" data-step="5"><span class="n">5</span>Cement</div>
+        <div class="step-pill" data-step="6"><span class="n">6</span>Report</div>
+      </div>
+
+      <!-- STEP 1: CAPTURE -->
+      <div class="panel step-panel" id="step-1">
+        <div class="dropzone" id="dropzone">
+          <div class="dz-icon">📷</div>
+          <h3 style="text-transform:none;font-family:'Inter';">Drop a photo, or capture one now</h3>
+          <p>Include the whole hole plus a reference object (A4 sheet, coin, or tape measure) beside it for accurate scaling.</p>
+          <div class="dz-actions">
+            <label class="btn btn-primary btn-sm" for="cameraInput">📸 Use Camera</label>
+            <label class="btn btn-ghost btn-sm" for="uploadInput">🖼️ Upload Image</label>
+          </div>
+          <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+          <input type="file" id="uploadInput" accept="image/*" style="display:none;">
+        </div>
+
+        <div style="text-align:center;margin-top:20px;">
+          <button class="pill-btn" id="manualEntryToggle">✏️ No photo available? Enter measurements manually →</button>
+        </div>
+
+        <div class="panel hidden" id="manualEntryPanel" style="margin-top:18px;padding:26px;">
+          <h3 style="font-family:'Inter';text-transform:none;font-size:17px;margin-bottom:6px;">Manual measurement entry</h3>
+          <p class="hint" style="margin-bottom:20px;">No photo, no problem — measure the hole yourself with a tape or scale and type the numbers in directly.</p>
+          <div class="two-col">
+            <div>
+              <div class="field">
+                <label>Hole shape</label>
+                <select id="manualShape">
+                  <option value="rect">Rectangular / square patch</option>
+                  <option value="circle">Circular / round hole</option>
+                  <option value="irregular">Irregular — I'll enter the area myself</option>
+                </select>
+              </div>
+              <div class="field" id="manualLWFields">
+                <label>Length (cm)</label>
+                <input type="number" id="manualLength" placeholder="e.g. 45" step="0.1">
+              </div>
+              <div class="field" id="manualWidthField">
+                <label>Width (cm)</label>
+                <input type="number" id="manualWidth" placeholder="e.g. 30" step="0.1">
+              </div>
+              <div class="field hidden" id="manualDiameterField">
+                <label>Diameter (cm)</label>
+                <input type="number" id="manualDiameter" placeholder="e.g. 25" step="0.1">
+              </div>
+              <div class="field hidden" id="manualAreaField">
+                <label>Surface area (cm²)</label>
+                <input type="number" id="manualArea" placeholder="e.g. 850" step="1">
+              </div>
+            </div>
+            <div>
+              <div class="field">
+                <label>Computed area</label>
+                <p class="mono" id="manualAreaReadout" style="font-size:22px;color:var(--tape);">— cm²</p>
+                <p class="hint">This is what carries forward into the depth and cement calculations, same as a photo-based measurement.</p>
+              </div>
+              <button class="btn btn-primary" id="manualContinueBtn" style="width:100%;" disabled>Continue to Depth →</button>
+              <button class="btn btn-ghost btn-sm" id="manualCancelBtn" style="width:100%;margin-top:10px;">Cancel, I'll use a photo instead</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: DETECT -->
+      <div class="panel step-panel hidden" id="step-2">
+        <div class="two-col">
+          <div>
+            <div class="canvas-wrap" id="detectCanvasWrap">
+              <canvas id="detectCanvas"></canvas>
+            </div>
+            <div class="canvas-toolbar">
+              <button class="pill-btn active" id="modeAuto">✨ AI Auto-Trace</button>
+              <button class="pill-btn" id="modeManual">✏️ Manual Trace</button>
+              <button class="pill-btn" id="undoPoint">↩ Undo Point</button>
+              <button class="pill-btn" id="clearTrace">🗑 Clear</button>
+            </div>
+          </div>
+          <div>
+            <div class="field">
+              <label>Detection sensitivity</label>
+              <input type="range" min="10" max="90" value="45" id="sensSlider" style="width:100%;">
+              <div class="hint">Adjust if the AI over- or under-traces the hole edge, then rerun.</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" id="rerunDetect" style="width:100%;margin-bottom:20px;">🔁 Re-run AI Detection</button>
+            <div id="detectStatus" class="field">
+              <label>AI Status</label>
+              <p class="hint" id="detectStatusText">Waiting for image…</p>
+            </div>
+            <div id="crackFlag"></div>
+            <button class="btn btn-primary" id="confirmDetect" style="width:100%;margin-top:10px;">Confirm Region →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: CALIBRATE -->
+      <div class="panel step-panel hidden" id="step-3">
+        <div class="two-col">
+          <div>
+            <div class="canvas-wrap" id="calibCanvasWrap">
+              <canvas id="calibCanvas"></canvas>
+            </div>
+            <p class="hint" style="margin-top:10px;">Click two points along the known edge of your reference object (e.g. the long edge of the A4 sheet).</p>
+          </div>
+          <div>
+            <div class="field">
+              <label>Reference object</label>
+              <select id="refObject">
+                <option value="29.7">A4 paper — long edge (29.7 cm)</option>
+                <option value="21">A4 paper — short edge (21 cm)</option>
+                <option value="2.5">Standard coin (2.5 cm)</option>
+                <option value="10">Steel scale segment (10 cm)</option>
+                <option value="custom">Custom length…</option>
+              </select>
+            </div>
+            <div class="field hidden" id="customRefField">
+              <label>Custom length (cm)</label>
+              <input type="number" id="customRefLength" placeholder="e.g. 15">
+            </div>
+            <div class="field">
+              <label>Computed scale</label>
+              <p class="mono" id="scaleReadout" style="font-size:22px;color:var(--tape);">— px/cm</p>
+              <p class="hint" id="calibStatus">Tap (or click) one end of the reference object, then the other.</p>
+            </div>
+            <button class="btn btn-primary" id="confirmCalib" style="width:100%;" disabled>Confirm Scale →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: DEPTH -->
+      <div class="panel step-panel hidden" id="step-4">
+        <div class="two-col">
+          <div>
+            <h3 style="font-family:'Inter';text-transform:none;font-size:18px;margin-bottom:14px;">Computed surface measurements</h3>
+            <div class="result-grid" id="surfaceMetrics" style="grid-template-columns:repeat(2,1fr);"></div>
+          </div>
+          <div>
+            <div class="field">
+              <label>Hole depth (optional)</label>
+              <input type="number" id="depthInput" placeholder="e.g. 8" step="0.1">
+              <div class="hint">Measure with a scale/rod, or leave blank to estimate volume as a shallow patch (assumes 3 cm).</div>
+            </div>
+            <button class="btn btn-primary" id="confirmDepth" style="width:100%;margin-top:10px;">Calculate Volume →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5: CEMENT -->
+      <div class="panel step-panel hidden" id="step-5">
+        <div class="two-col">
+          <div>
+            <div class="field">
+              <label>Concrete mix grade</label>
+              <div class="chip-row" id="mixChips">
+                <div class="chip" data-mix="M10">M10 (1:3:6)</div>
+                <div class="chip" data-mix="M15">M15 (1:2:4)</div>
+                <div class="chip selected" data-mix="M20">M20 (1:1.5:3)</div>
+                <div class="chip" data-mix="M25">M25 (1:1:2)</div>
+                <div class="chip" data-mix="M30">M30 (1:1:1.5)</div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Cement price (₹ / 50kg bag)</label>
+              <input type="number" id="cementPrice" value="400">
+            </div>
+            <div class="field">
+              <label>Sand price (₹ / cu.ft)</label>
+              <input type="number" id="sandPrice" value="55">
+            </div>
+            <div class="field">
+              <label>Aggregate price (₹ / cu.ft)</label>
+              <input type="number" id="aggPrice" value="65">
+            </div>
+          </div>
+          <div>
+            <p class="hint" style="margin-bottom:14px;">Dry volume factor of 1.54× is applied automatically to account for bulking and shrinkage during mixing, per standard practice.</p>
+            <button class="btn btn-primary" id="confirmMix" style="width:100%;">Generate Full Report →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 6: REPORT -->
+      <div class="panel step-panel hidden" id="step-6">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:10px;">
+          <div>
+            <h3 style="font-family:'Inter';text-transform:none;font-size:22px;">Repair Report</h3>
+            <p class="hint" id="reportDate" style="margin-top:4px;"></p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="badge" id="priorityBadge">—</span>
+            <button class="pill-btn" id="gpsBtn">📍 Tag GPS</button>
+            <button class="pill-btn" id="speakBtn">🔊 Read Aloud</button>
+            <button class="pill-btn" id="pdfBtn">📄 Export PDF</button>
+            <button class="pill-btn" id="saveHistBtn">💾 Save to History</button>
+          </div>
+        </div>
+
+        <div id="reportBody">
+          <div class="two-col" style="margin-top:20px;">
+            <div>
+              <div class="canvas-wrap"><canvas id="reportCanvas"></canvas></div>
+              <p class="hint" id="gpsReadout" style="margin-top:8px;"></p>
+            </div>
+            <div>
+              <div class="result-grid" id="reportMetrics" style="grid-template-columns:repeat(2,1fr);"></div>
+              <div class="field" style="margin-top:10px;">
+                <label>Est. repair time</label>
+                <p class="mono" id="repairTime" style="font-size:20px;color:var(--tape);">—</p>
+              </div>
+            </div>
+          </div>
+
+          <h4 style="font-family:'Inter';font-size:16px;text-transform:none;margin:28px 0 4px;">Material requirement — <span id="reportMixLabel">M20</span></h4>
+          <div class="panel" style="padding:20px;">
+            <div class="material-row">
+              <div class="m-name"><span class="swatch" style="background:var(--tape)"></span>Cement</div>
+              <div class="bar-track"><div class="bar-fill" id="barCement" style="background:var(--tape);width:0%"></div></div>
+              <div class="m-amt" id="amtCement">—</div>
+            </div>
+            <div class="material-row">
+              <div class="m-name"><span class="swatch" style="background:var(--steel-blue-light)"></span>Sand</div>
+              <div class="bar-track"><div class="bar-fill" id="barSand" style="background:var(--steel-blue-light);width:0%"></div></div>
+              <div class="m-amt" id="amtSand">—</div>
+            </div>
+            <div class="material-row">
+              <div class="m-name"><span class="swatch" style="background:var(--concrete-700)"></span>Aggregate</div>
+              <div class="bar-track"><div class="bar-fill" id="barAgg" style="background:var(--concrete-700);width:0%"></div></div>
+              <div class="m-amt" id="amtAgg">—</div>
+            </div>
+            <div class="material-row" style="border-top:2px solid var(--border);margin-top:6px;padding-top:16px;">
+              <div class="m-name" style="font-size:16px;">Estimated total cost</div>
+              <div class="m-amt" id="amtCost" style="font-size:20px;color:var(--hazard);font-weight:700;">—</div>
+            </div>
+          </div>
+
+          <div class="recommend-box" id="recommendBox"></div>
+
+          <div style="margin-top:24px;text-align:center;">
+            <button class="btn btn-ghost" id="newMeasureBtn">↻ Start a New Measurement</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ HISTORY PAGE ============ -->
+<div class="page" id="page-history">
+  <section class="section" style="padding-top:36px;">
+    <div class="wrap">
+      <div class="section-head" style="margin-bottom:24px;">
+        <span class="label">Saved Reports</span>
+        <h2>Measurement History</h2>
+        <p>All reports are stored privately to your account on this device/browser.</p>
+      </div>
+      <div class="history-toolbar">
+        <input type="text" id="histSearch" placeholder="🔍 Search by date or notes…" style="flex:1;min-width:200px;">
+        <select id="histFilter">
+          <option value="all">All priorities</option>
+          <option value="Low">Low priority</option>
+          <option value="Medium">Medium priority</option>
+          <option value="High">High priority</option>
+        </select>
+        <button class="pill-btn" id="histRefresh">↻ Refresh</button>
+      </div>
+      <div class="history-grid" id="historyGrid"></div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">Darshan Cement AI — On-device measurement assistant · Estimates are guidance only, verify critical structural repairs with a qualified engineer.</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ======================================================================
+   STATE
+====================================================================== */
+const state = {
+  page:'home',
+  step:1,
+  theme:'dark',
+  lang:'en',
+  img:null,            // HTMLImageElement of loaded photo
+  imgNatW:0, imgNatH:0,
+  polygon:[],          // array of {x,y} in natural image coords (hole outline)
+  detectMode:'auto',
+  edgeDensity:0,
+  calibPoints:[],      // two points in natural coords
+  scalePxPerCm:0,
+  refLengthCm:29.7,
+  lengthCm:0, widthCm:0, areaCm2:0,
+  depthCm:3,
+  volumeCm3:0,
+  mix:'M20',
+  priority:'Low',
+  gps:null,
+  manualMode:false,
+};
+
+const MIXES = {
+  M10:{ratio:[1,3,6], label:'M10 (1:3:6)'},
+  M15:{ratio:[1,2,4], label:'M15 (1:2:4)'},
+  M20:{ratio:[1,1.5,3], label:'M20 (1:1.5:3)'},
+  M25:{ratio:[1,1,2], label:'M25 (1:1:2)'},
+  M30:{ratio:[1,1,1.5], label:'M30 (1:1:1.5)'},
+};
+
+const I18N = {
+  en:{start:'Start Measuring', measure:'Measure', history:'History', home:'Home'},
+  hi:{start:'नापना शुरू करें', measure:'माप', history:'इतिहास', home:'होम'},
+};
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* ======================================================================
+   NAV / THEME / LANG
+====================================================================== */
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('nav.links button').forEach(b=>b.classList.toggle('active', b.dataset.page===name));
+  state.page=name;
+  if(name==='history') renderHistory();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('nav.links button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+document.getElementById('navStartBtn').addEventListener('click',()=>{showPage('measure');goToStep(1);});
+document.getElementById('heroStartBtn').addEventListener('click',()=>{showPage('measure');goToStep(1);});
+document.getElementById('ctaStartBtn').addEventListener('click',()=>{showPage('measure');goToStep(1);});
+document.getElementById('heroHistoryBtn').addEventListener('click',()=>showPage('history'));
+
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  const html=document.documentElement;
+  const next = html.getAttribute('data-theme')==='dark' ? 'light':'dark';
+  html.setAttribute('data-theme', next);
+  document.getElementById('themeBtn').textContent = next==='dark' ? '☀️' : '🌙';
+  buildTapeTicks();
+});
+document.getElementById('langBtn').addEventListener('click',()=>{
+  state.lang = state.lang==='en' ? 'hi' : 'en';
+  document.getElementById('langBtn').textContent = state.lang.toUpperCase();
+  const d=I18N[state.lang];
+  document.querySelector('#navLinks button[data-page="home"]').textContent=d.home;
+  document.querySelector('#navLinks button[data-page="measure"]').textContent=d.measure;
+  document.querySelector('#navLinks button[data-page="history"]').textContent=d.history;
+  document.getElementById('navStartBtn').textContent=d.start;
+  toast(state.lang==='hi' ? 'भाषा हिन्दी में बदली गई' : 'Language set to English');
+});
+
+function buildTapeTicks(){
+  const el=document.getElementById('tapeTicks'); if(!el) return;
+  el.innerHTML='';
+  for(let i=0;i<60;i++){
+    const t=document.createElement('div');
+    t.className='tick'+(i%5===0?' major':'');
+    if(i%5===0){const s=document.createElement('span');s.textContent=i;t.appendChild(s);}
+    el.appendChild(t);
+  }
+}
+buildTapeTicks();
+
+/* ======================================================================
+   STEPPER
+====================================================================== */
+function goToStep(n){
+  state.step=n;
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.add('hidden'));
+  document.getElementById('step-'+n).classList.remove('hidden');
+  document.querySelectorAll('.step-pill').forEach(p=>{
+    const s=parseInt(p.dataset.step);
+    p.classList.toggle('active', s===n);
+    p.classList.toggle('done', s<n && !(state.manualMode && (s===2||s===3)));
+    p.classList.toggle('disabled', state.manualMode && (s===2||s===3));
+  });
+  const titles={1:'Capture the damaged area',2:'AI is tracing the hole boundary',3:'Calibrate with a reference object',4:'Confirm depth & volume',5:'Choose your concrete mix',6:'Your repair report'};
+  document.getElementById('measureTitle').textContent = (state.manualMode && titles[n]) ? titles[n].replace('Capture the damaged area','Enter measurements manually') : (titles[n] || '');
+  if(n===3) drawCalibCanvas();
+  if(n===4) populateSurfaceMetrics();
+}
+document.querySelectorAll('.step-pill').forEach(p=>{
+  p.addEventListener('click',()=>{
+    const s=parseInt(p.dataset.step);
+    if(state.manualMode && (s===2||s===3)){ toast('Detection & calibration are skipped in manual entry mode.'); return; }
+    if(s<=state.step || (state.polygon.length>2 && s<=6) || (state.manualMode && s<=6 && s>=4)) goToStep(s);
+  });
+});
+
+/* ======================================================================
+   STEP 1 — CAPTURE / UPLOAD
+====================================================================== */
+const dropzone=document.getElementById('dropzone');
+['dragover','dragenter'].forEach(ev=>dropzone.addEventListener(ev,e=>{e.preventDefault();dropzone.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>dropzone.addEventListener(ev,e=>{e.preventDefault();dropzone.classList.remove('drag');}));
+dropzone.addEventListener('drop', e=>{
+  const f=e.dataTransfer.files[0];
+  if(f) loadImageFile(f);
+});
+document.getElementById('cameraInput').addEventListener('change', e=>{ if(e.target.files[0]) loadImageFile(e.target.files[0]); });
+document.getElementById('uploadInput').addEventListener('change', e=>{ if(e.target.files[0]) loadImageFile(e.target.files[0]); });
+
+function loadImageFile(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      state.img=img; state.imgNatW=img.naturalWidth; state.imgNatH=img.naturalHeight;
+      state.polygon=[]; state.calibPoints=[]; state.manualMode=false;
+      document.getElementById('manualEntryPanel').classList.add('hidden');
+      goToStep(2);
+      setupDetectCanvas();
+      runAutoDetect();
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ======================================================================
+   MANUAL ENTRY (no photo available)
+====================================================================== */
+const manualEntryPanel=document.getElementById('manualEntryPanel');
+document.getElementById('manualEntryToggle').addEventListener('click', ()=>{
+  manualEntryPanel.classList.toggle('hidden');
+  if(!manualEntryPanel.classList.contains('hidden')){
+    manualEntryPanel.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+});
+document.getElementById('manualCancelBtn').addEventListener('click', ()=>{
+  manualEntryPanel.classList.add('hidden');
+});
+document.getElementById('manualShape').addEventListener('change', e=>{
+  const shape=e.target.value;
+  document.getElementById('manualLWFields').classList.toggle('hidden', shape==='circle');
+  document.getElementById('manualWidthField').classList.toggle('hidden', shape==='circle');
+  document.getElementById('manualDiameterField').classList.toggle('hidden', shape!=='circle');
+  document.getElementById('manualAreaField').classList.toggle('hidden', shape!=='irregular');
+  updateManualArea();
+});
+['manualLength','manualWidth','manualDiameter','manualArea'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updateManualArea);
+});
+function updateManualArea(){
+  const shape=document.getElementById('manualShape').value;
+  let length=0, width=0, area=0, valid=false;
+  if(shape==='rect'){
+    length=parseFloat(document.getElementById('manualLength').value)||0;
+    width=parseFloat(document.getElementById('manualWidth').value)||0;
+    area=length*width;
+    valid = length>0 && width>0;
+  } else if(shape==='circle'){
+    const d=parseFloat(document.getElementById('manualDiameter').value)||0;
+    length=d; width=d;
+    area = Math.PI*Math.pow(d/2,2);
+    valid = d>0;
+  } else {
+    length=parseFloat(document.getElementById('manualLength').value)||0;
+    width=parseFloat(document.getElementById('manualWidth').value)||0;
+    area=parseFloat(document.getElementById('manualArea').value)||0;
+    valid = area>0;
+  }
+  document.getElementById('manualAreaReadout').textContent = area>0 ? area.toFixed(1)+' cm²' : '— cm²';
+  document.getElementById('manualContinueBtn').disabled = !valid;
+  return {length,width,area,valid};
+}
+document.getElementById('manualContinueBtn').addEventListener('click', ()=>{
+  const {length,width,area,valid} = updateManualArea();
+  if(!valid){ toast('Enter valid dimensions first.'); return; }
+  state.manualMode=true;
+  state.manualShape=shape;
+  state.img=null; state.polygon=[]; state.calibPoints=[]; state.edgeDensity=0;
+  state.lengthCm = length || Math.sqrt(area);
+  state.widthCm = width || Math.sqrt(area);
+  state.areaCm2 = area;
+  toast('Using manual measurements — no photo required.');
+  goToStep(4);
+});
+
+/* ======================================================================
+   STEP 2 — DETECTION (real edge/threshold based contour extraction)
+====================================================================== */
+let detectCanvas, detectCtx, workCanvas, workCtx;
+let scaleFactor=1; // canvas px per natural px
+
+function setupDetectCanvas(){
+  detectCanvas=document.getElementById('detectCanvas');
+  const maxW = detectCanvas.parentElement.clientWidth || 640;
+  scaleFactor = Math.min(1, maxW/state.imgNatW);
+  detectCanvas.width = Math.round(state.imgNatW*scaleFactor);
+  detectCanvas.height = Math.round(state.imgNatH*scaleFactor);
+  detectCtx=detectCanvas.getContext('2d');
+  drawDetectBase();
+
+  workCanvas = document.createElement('canvas');
+  workCanvas.width=state.imgNatW; workCanvas.height=state.imgNatH;
+  workCtx=workCanvas.getContext('2d');
+  workCtx.drawImage(state.img,0,0);
+
+  detectCanvas.onpointerdown = e=>{
+    e.preventDefault();
+    if(state.detectMode!=='manual') return;
+    const r=detectCanvas.getBoundingClientRect();
+    const rx = (e.clientX-r.left) * (detectCanvas.width/r.width);
+    const ry = (e.clientY-r.top) * (detectCanvas.height/r.height);
+    const x=rx/scaleFactor, y=ry/scaleFactor;
+    state.polygon.push({x,y});
+    redrawDetectOverlay();
+  };
+}
+function drawDetectBase(){
+  detectCtx.clearRect(0,0,detectCanvas.width,detectCanvas.height);
+  detectCtx.drawImage(state.img,0,0,detectCanvas.width,detectCanvas.height);
+}
+function redrawDetectOverlay(){
+  drawDetectBase();
+  if(state.polygon.length>0){
+    detectCtx.beginPath();
+    state.polygon.forEach((p,i)=>{
+      const cx=p.x*scaleFactor, cy=p.y*scaleFactor;
+      if(i===0) detectCtx.moveTo(cx,cy); else detectCtx.lineTo(cx,cy);
+    });
+    if(state.polygon.length>2) detectCtx.closePath();
+    detectCtx.strokeStyle='#F0B429'; detectCtx.lineWidth=3; detectCtx.stroke();
+    detectCtx.fillStyle='rgba(226,87,43,0.28)'; if(state.polygon.length>2) detectCtx.fill();
+    state.polygon.forEach(p=>{
+      detectCtx.beginPath();
+      detectCtx.arc(p.x*scaleFactor,p.y*scaleFactor,4,0,7);
+      detectCtx.fillStyle='#E2572B'; detectCtx.fill();
+    });
+  }
+}
+
+// --- Real image-processing based auto detection ---
+// Approach: grayscale -> local threshold to find the darkest connected blob (holes/shadows read darker
+// than surrounding surface) -> flood-fill region growing -> alpha-shape style boundary trace via marching
+// around the mask perimeter -> polygon simplification.
+function runAutoDetect(){
+  document.getElementById('detectStatusText').innerHTML='Analyzing image <span class="loader-dot"></span><span class="loader-dot" style="animation-delay:.2s"></span><span class="loader-dot" style="animation-delay:.4s"></span>';
+  setTimeout(()=>{
+    try{
+      const sens = parseInt(document.getElementById('sensSlider').value);
+      const result = detectHoleMask(workCtx, state.imgNatW, state.imgNatH, sens);
+      state.polygon = result.polygon;
+      state.edgeDensity = result.edgeDensity;
+      redrawDetectOverlay();
+      document.getElementById('detectStatusText').textContent =
+        `Detected irregular region · ${result.polygon.length} boundary points · confidence ${result.confidence}%`;
+      showCrackFlag(result.edgeDensity);
+    }catch(err){
+      document.getElementById('detectStatusText').textContent='Auto-trace failed — switch to Manual Trace and click around the hole edge.';
+    }
+  }, 550);
+}
+
+function detectHoleMask(ctx, w, h, sensitivity){
+  // downsample for performance
+  const scale = Math.min(1, 300/Math.max(w,h));
+  const sw=Math.max(1,Math.round(w*scale)), sh=Math.max(1,Math.round(h*scale));
+  const tmp=document.createElement('canvas'); tmp.width=sw; tmp.height=sh;
+  const tctx=tmp.getContext('2d');
+  tctx.drawImage(ctx.canvas,0,0,sw,sh);
+  const data=tctx.getImageData(0,0,sw,sh).data;
+  const gray=new Float32Array(sw*sh);
+  let sum=0;
+  for(let i=0;i<sw*sh;i++){
+    const g=(data[i*4]*0.299+data[i*4+1]*0.587+data[i*4+2]*0.114);
+    gray[i]=g; sum+=g;
+  }
+  const mean=sum/(sw*sh);
+  // threshold: darker-than-mean pixels are candidate hole/shadow pixels; sensitivity shifts cutoff
+  const cutoff = mean - (sensitivity/100)*mean*0.9;
+  const mask=new Uint8Array(sw*sh);
+  for(let i=0;i<sw*sh;i++) mask[i]= gray[i]<cutoff ? 1:0;
+
+  // find largest connected component via BFS flood fill
+  const visited=new Uint8Array(sw*sh);
+  let best=[]; let bestSize=0;
+  for(let y=0;y<sh;y++){
+    for(let x=0;x<sw;x++){
+      const idx=y*sw+x;
+      if(mask[idx]===1 && !visited[idx]){
+        const compPixels=[]; const queue=[idx]; visited[idx]=1;
+        while(queue.length){
+          const cur=queue.pop();
+          compPixels.push(cur);
+          const cx=cur%sw, cy=(cur/sw)|0;
+          const neighbors=[[cx-1,cy],[cx+1,cy],[cx,cy-1],[cx,cy+1]];
+          for(const [nx,ny] of neighbors){
+            if(nx>=0&&nx<sw&&ny>=0&&ny<sh){
+              const nidx=ny*sw+nx;
+              if(mask[nidx]===1 && !visited[nidx]){ visited[nidx]=1; queue.push(nidx); }
+            }
+          }
+        }
+        if(compPixels.length>bestSize){ bestSize=compPixels.length; best=compPixels; }
+      }
+    }
+  }
+  // fallback: if nothing found or too small/too large, use a centered ellipse
+  if(bestSize < sw*sh*0.01 || bestSize > sw*sh*0.85){
+    const cx=w/2, cy=h/2, rx=w*0.22, ry=h*0.16;
+    const poly=[];
+    for(let a=0;a<360;a+=18){
+      const rad=a*Math.PI/180;
+      poly.push({x:cx+rx*Math.cos(rad), y:cy+ry*Math.sin(rad)});
+    }
+    return {polygon:poly, edgeDensity:0.15, confidence:62};
+  }
+
+  // build boundary: for each pixel in component, keep if it has a non-member neighbor (perimeter pixel)
+  const compSet=new Set(best);
+  const boundaryPts=[];
+  for(const idx of best){
+    const cx=idx%sw, cy=(idx/sw)|0;
+    const neighbors=[[cx-1,cy],[cx+1,cy],[cx,cy-1],[cx,cy+1]];
+    let isBoundary=false;
+    for(const [nx,ny] of neighbors){
+      if(nx<0||nx>=sw||ny<0||ny>=sh){ isBoundary=true; break; }
+      if(!compSet.has(ny*sw+nx)){ isBoundary=true; break; }
+    }
+    if(isBoundary) boundaryPts.push({x:cx/scale, y:cy/scale});
+  }
+
+  // order boundary points angularly around centroid (approximate contour trace) then simplify
+  let cx=0,cy=0;
+  for(const p of boundaryPts){ cx+=p.x; cy+=p.y; }
+  cx/=boundaryPts.length; cy/=boundaryPts.length;
+  boundaryPts.forEach(p=>{ p.ang=Math.atan2(p.y-cy,p.x-cx); p.dist=Math.hypot(p.x-cx,p.y-cy); });
+  boundaryPts.sort((a,b)=>a.ang-b.ang);
+
+  // bucket into N angular slices, take max-dist point per slice for a clean simplified hull-like outline
+  const N=28; const buckets=new Array(N).fill(null);
+  boundaryPts.forEach(p=>{
+    const bi = Math.floor(((p.ang+Math.PI)/(2*Math.PI))*N) % N;
+    if(!buckets[bi] || p.dist>buckets[bi].dist) buckets[bi]=p;
+  });
+  const polygon = buckets.filter(Boolean).map(p=>({x:p.x,y:p.y}));
+
+  // edge density around bounding box exterior (proxy for crack detection)
+  let edgeCount=0;
+  for(let i=1;i<sw*sh;i++){ if(Math.abs(gray[i]-gray[i-1])>28) edgeCount++; }
+  const edgeDensity = edgeCount/(sw*sh);
+
+  const confidence = Math.min(97, Math.round(60 + (bestSize/(sw*sh))*120));
+  return {polygon, edgeDensity, confidence};
+}
+
+function showCrackFlag(density){
+  const el=document.getElementById('crackFlag');
+  if(density>0.09){
+    el.innerHTML = `<div class="field"><label>Crack Analysis</label><p class="hint" style="color:var(--danger);">⚠️ High surrounding edge activity detected — possible hairline cracks radiating from the hole. Recommend inspecting a wider radius.</p></div>`;
+  } else {
+    el.innerHTML = `<div class="field"><label>Crack Analysis</label><p class="hint" style="color:var(--success);">✓ No significant cracking detected around the boundary.</p></div>`;
+  }
+}
+
+document.getElementById('sensSlider').addEventListener('input', ()=>{});
+document.getElementById('rerunDetect').addEventListener('click', runAutoDetect);
+document.getElementById('modeAuto').addEventListener('click',()=>{
+  state.detectMode='auto';
+  document.getElementById('modeAuto').classList.add('active');
+  document.getElementById('modeManual').classList.remove('active');
+  runAutoDetect();
+});
+document.getElementById('modeManual').addEventListener('click',()=>{
+  state.detectMode='manual'; state.polygon=[];
+  document.getElementById('modeManual').classList.add('active');
+  document.getElementById('modeAuto').classList.remove('active');
+  redrawDetectOverlay();
+  document.getElementById('detectStatusText').textContent='Manual mode — click around the hole edge to trace it point by point.';
+});
+document.getElementById('undoPoint').addEventListener('click',()=>{ state.polygon.pop(); redrawDetectOverlay(); });
+document.getElementById('clearTrace').addEventListener('click',()=>{ state.polygon=[]; redrawDetectOverlay(); });
+document.getElementById('confirmDetect').addEventListener('click',()=>{
+  if(state.polygon.length<3){ toast('Trace at least 3 points to define the hole outline.'); return; }
+  goToStep(3);
+});
+
+/* ======================================================================
+   STEP 3 — CALIBRATION
+====================================================================== */
+let calibCanvas, calibCtx;
+function drawCalibCanvas(){
+  calibCanvas=document.getElementById('calibCanvas');
+  const maxW = calibCanvas.parentElement.clientWidth || 640;
+  const sf = Math.min(1, maxW/state.imgNatW);
+  calibCanvas.width=Math.round(state.imgNatW*sf);
+  calibCanvas.height=Math.round(state.imgNatH*sf);
+  calibCtx=calibCanvas.getContext('2d');
+  renderCalib();
+  document.getElementById('confirmCalib').disabled=true;
+  document.getElementById('scaleReadout').textContent='— px/cm';
+  document.getElementById('calibStatus').textContent='Tap (or click) one end of the reference object, then the other.';
+  calibCanvas.onpointerdown = e=>{
+    e.preventDefault();
+    const r=calibCanvas.getBoundingClientRect();
+    const rx = (e.clientX-r.left) * (calibCanvas.width/r.width);
+    const ry = (e.clientY-r.top) * (calibCanvas.height/r.height);
+    const x=rx/sf, y=ry/sf;
+    if(state.calibPoints.length>=2) state.calibPoints=[];
+    state.calibPoints.push({x,y});
+    renderCalib();
+    if(state.calibPoints.length===1){
+      document.getElementById('calibStatus').textContent='Point 1 placed — now tap the other end of the same object.';
+    } else if(state.calibPoints.length===2){
+      computeScale();
+    }
+  };
+}
+function renderCalib(){
+  const sf = calibCanvas.width/state.imgNatW;
+  calibCtx.clearRect(0,0,calibCanvas.width,calibCanvas.height);
+  calibCtx.drawImage(state.img,0,0,calibCanvas.width,calibCanvas.height);
+  // show hole polygon for context
+  if(state.polygon.length>2){
+    calibCtx.beginPath();
+    state.polygon.forEach((p,i)=>{
+      const cx=p.x*sf, cy=p.y*sf;
+      if(i===0) calibCtx.moveTo(cx,cy); else calibCtx.lineTo(cx,cy);
+    });
+    calibCtx.closePath();
+    calibCtx.strokeStyle='rgba(240,180,41,0.7)'; calibCtx.lineWidth=2; calibCtx.stroke();
+  }
+  if(state.calibPoints.length>0){
+    calibCtx.beginPath();
+    state.calibPoints.forEach((p,i)=>{
+      const cx=p.x*sf, cy=p.y*sf;
+      if(i===0) calibCtx.moveTo(cx,cy); else calibCtx.lineTo(cx,cy);
+    });
+    calibCtx.strokeStyle='#2F5C6E'; calibCtx.lineWidth=3; calibCtx.stroke();
+    state.calibPoints.forEach(p=>{
+      calibCtx.beginPath(); calibCtx.arc(p.x*sf,p.y*sf,5,0,7);
+      calibCtx.fillStyle='#5A93A8'; calibCtx.fill();
+    });
+  }
+}
+function computeScale(){
+  const [a,b]=state.calibPoints;
+  const distPx = Math.hypot(b.x-a.x,b.y-a.y);
+  if(distPx<4){
+    document.getElementById('calibStatus').textContent='Those two points are too close together — tap two clearly separate ends of the reference object.';
+    document.getElementById('confirmCalib').disabled=true;
+    state.calibPoints=[];
+    return;
+  }
+  const refVal=document.getElementById('refObject').value;
+  const refCm = refVal==='custom' ? (parseFloat(document.getElementById('customRefLength').value)||1) : parseFloat(refVal);
+  state.refLengthCm=refCm;
+  state.scalePxPerCm = distPx/refCm;
+  document.getElementById('scaleReadout').textContent = state.scalePxPerCm.toFixed(2)+' px/cm';
+  document.getElementById('calibStatus').textContent='Scale set ✓ — you can re-tap two new points to redo it.';
+  document.getElementById('confirmCalib').disabled=false;
+}
+document.getElementById('refObject').addEventListener('change', e=>{
+  document.getElementById('customRefField').classList.toggle('hidden', e.target.value!=='custom');
+  if(state.calibPoints.length===2) computeScale();
+});
+document.getElementById('customRefLength').addEventListener('input', ()=>{ if(state.calibPoints.length===2) computeScale(); });
+document.getElementById('confirmCalib').addEventListener('click',()=>{
+  if(!state.scalePxPerCm || state.calibPoints.length<2){
+    toast('Place two calibration points on the reference object first.');
+    return;
+  }
+  computeMeasurements();
+  goToStep(4);
+});
+
+/* ======================================================================
+   MEASUREMENT MATH
+====================================================================== */
+function computeMeasurements(){
+  const poly=state.polygon;
+  // shoelace area in px^2
+  let area=0;
+  for(let i=0;i<poly.length;i++){
+    const p1=poly[i], p2=poly[(i+1)%poly.length];
+    area += p1.x*p2.y - p2.x*p1.y;
+  }
+  area=Math.abs(area/2);
+  const xs=poly.map(p=>p.x), ys=poly.map(p=>p.y);
+  const lengthPx = Math.max(...xs)-Math.min(...xs);
+  const widthPx = Math.max(...ys)-Math.min(...ys);
+
+  const s=state.scalePxPerCm || 1;
+  state.lengthCm = lengthPx/s;
+  state.widthCm = widthPx/s;
+  state.areaCm2 = area/(s*s);
+}
+function populateSurfaceMetrics(){
+  const el=document.getElementById('surfaceMetrics');
+  const lastMetric = state.manualMode
+    ? `<div class="metric"><div class="m-label">Source</div><div class="m-value" style="font-size:16px;">✏️ Manual entry</div></div>`
+    : `<div class="metric"><div class="m-label">Shape Points</div><div class="m-value">${state.polygon.length}<small> pts</small></div></div>`;
+  el.innerHTML = `
+    <div class="metric"><div class="m-label">Length</div><div class="m-value">${state.lengthCm.toFixed(1)}<small> cm</small></div></div>
+    <div class="metric"><div class="m-label">Width</div><div class="m-value">${state.widthCm.toFixed(1)}<small> cm</small></div></div>
+    <div class="metric"><div class="m-label">Surface Area</div><div class="m-value">${state.areaCm2.toFixed(0)}<small> cm²</small></div></div>
+    ${lastMetric}
+  `;
+}
+document.getElementById('confirmDepth').addEventListener('click',()=>{
+  const d=parseFloat(document.getElementById('depthInput').value);
+  state.depthCm = (!isNaN(d) && d>0) ? d : 3;
+  state.volumeCm3 = state.areaCm2 * state.depthCm;
+  computePriority();
+  goToStep(5);
+});
+
+function computePriority(){
+  const volM3 = state.volumeCm3/1e6;
+  if(volM3<0.003 && state.depthCm<4) state.priority='Low';
+  else if(volM3<0.02 && state.depthCm<12) state.priority='Medium';
+  else state.priority='High';
+  if(state.edgeDensity>0.09 && state.priority==='Low') state.priority='Medium';
+}
+
+/* ======================================================================
+   STEP 5 — MIX SELECTION
+====================================================================== */
+document.querySelectorAll('#mixChips .chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    document.querySelectorAll('#mixChips .chip').forEach(x=>x.classList.remove('selected'));
+    c.classList.add('selected');
+    state.mix=c.dataset.mix;
+  });
+});
+document.getElementById('confirmMix').addEventListener('click',()=>{
+  computeCementEstimate();
+  buildReport();
+  goToStep(6);
+});
+
+let cementCalc={};
+function computeCementEstimate(){
+  const volM3 = state.volumeCm3/1e6;
+  const dryVol = volM3*1.54;
+  const ratio = MIXES[state.mix].ratio;
+  const sumRatio = ratio[0]+ratio[1]+ratio[2];
+  const cementVolM3 = dryVol*(ratio[0]/sumRatio);
+  const sandVolM3 = dryVol*(ratio[1]/sumRatio);
+  const aggVolM3 = dryVol*(ratio[2]/sumRatio);
+
+  const cementKg = cementVolM3*1440;
+  const cementBags = cementKg/50;
+  const sandKg = sandVolM3*1600;
+  const aggKg = aggVolM3*1450;
+  const cft = 0.0283168; // m3 per cubic foot
+  const sandCft = sandVolM3/cft;
+  const aggCft = aggVolM3/cft;
+
+  const cementPrice=parseFloat(document.getElementById('cementPrice').value)||0;
+  const sandPrice=parseFloat(document.getElementById('sandPrice').value)||0;
+  const aggPrice=parseFloat(document.getElementById('aggPrice').value)||0;
+
+  const cost = cementBags*cementPrice + sandCft*sandPrice + aggCft*aggPrice;
+
+  cementCalc={cementKg,cementBags,sandKg,sandCft,aggKg,aggCft,cost,volM3,dryVol};
+}
+
+/* ======================================================================
+   STEP 6 — REPORT
+====================================================================== */
+function buildReport(){
+  document.getElementById('reportDate').textContent = new Date().toLocaleString();
+  const badge=document.getElementById('priorityBadge');
+  badge.textContent=state.priority+' Priority';
+  badge.className='badge '+(state.priority==='Low'?'badge-low':state.priority==='Medium'?'badge-med':'badge-high');
+
+  // draw final annotated canvas
+  const rc=document.getElementById('reportCanvas');
+  const maxW = rc.parentElement.clientWidth || 640;
+  const sf=Math.min(1,maxW/state.imgNatW);
+  rc.width=Math.round(state.imgNatW*sf); rc.height=Math.round(state.imgNatH*sf);
+  const rctx=rc.getContext('2d');
+  rctx.drawImage(state.img,0,0,rc.width,rc.height);
+  rctx.beginPath();
+  state.polygon.forEach((p,i)=>{
+    const cx=p.x*sf, cy=p.y*sf;
+    if(i===0) rctx.moveTo(cx,cy); else rctx.lineTo(cx,cy);
+  });
+  rctx.closePath();
+  rctx.fillStyle='rgba(226,87,43,0.30)'; rctx.fill();
+  rctx.strokeStyle='#F0B429'; rctx.lineWidth=3; rctx.stroke();
+
+  document.getElementById('reportMetrics').innerHTML = `
+    <div class="metric"><div class="m-label">Length</div><div class="m-value">${state.lengthCm.toFixed(1)}<small> cm</small></div></div>
+    <div class="metric"><div class="m-label">Width</div><div class="m-value">${state.widthCm.toFixed(1)}<small> cm</small></div></div>
+    <div class="metric"><div class="m-label">Depth</div><div class="m-value">${state.depthCm.toFixed(1)}<small> cm</small></div></div>
+    <div class="metric"><div class="m-label">Volume</div><div class="m-value">${(state.volumeCm3/1000).toFixed(2)}<small> L</small></div></div>
+  `;
+  const hours = Math.max(0.5, (state.volumeCm3/1e6)*40 + 0.3);
+  document.getElementById('repairTime').textContent = hours.toFixed(1)+' hrs (incl. cure prep)';
+
+  document.getElementById('reportMixLabel').textContent = MIXES[state.mix].label;
+  const c=cementCalc;
+  const maxBar = Math.max(c.cementKg, c.sandKg, c.aggKg, 1);
+  document.getElementById('barCement').style.width = (c.cementKg/maxBar*100)+'%';
+  document.getElementById('barSand').style.width = (c.sandKg/maxBar*100)+'%';
+  document.getElementById('barAgg').style.width = (c.aggKg/maxBar*100)+'%';
+  document.getElementById('amtCement').textContent = `${c.cementBags.toFixed(2)} bags (${c.cementKg.toFixed(1)} kg)`;
+  document.getElementById('amtSand').textContent = `${c.sandCft.toFixed(2)} cu.ft (${c.sandKg.toFixed(1)} kg)`;
+  document.getElementById('amtAgg').textContent = `${c.aggCft.toFixed(2)} cu.ft (${c.aggKg.toFixed(1)} kg)`;
+  document.getElementById('amtCost').textContent = '₹'+c.cost.toFixed(0);
+
+  const recs=[];
+  recs.push(`Patch area of ${state.areaCm2.toFixed(0)} cm² at ${state.depthCm.toFixed(1)} cm depth classifies as <b>${state.priority} priority</b>.`);
+  if(state.edgeDensity>0.09) recs.push('Surrounding surface shows elevated edge irregularity — inspect for radiating hairline cracks before filling.');
+  recs.push(`Use ${MIXES[state.mix].label} mix; dampen the substrate and apply a bonding coat before pouring for better adhesion.`);
+  recs.push(`Allow at least 24–48 hours initial cure before reopening the area to light traffic.`);
+  if(state.priority==='High') recs.push('Consider consulting a structural engineer if this hole is on a load-bearing surface.');
+  document.getElementById('recommendBox').innerHTML = `<h4>🤖 AI Recommendations</h4><ul>${recs.map(r=>'<li>'+r+'</li>').join('')}</ul>`;
+
+  document.getElementById('gpsReadout').textContent='';
+  state.gps=null;
+}
+
+document.getElementById('gpsBtn').addEventListener('click',()=>{
+  if(!navigator.geolocation){ toast('Geolocation not supported on this device.'); return; }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    state.gps={lat:pos.coords.latitude, lon:pos.coords.longitude};
+    document.getElementById('gpsReadout').textContent = `📍 ${state.gps.lat.toFixed(5)}, ${state.gps.lon.toFixed(5)}`;
+    toast('Location tagged.');
+  }, ()=>toast('Could not access location — check permissions.'));
+});
+
+document.getElementById('speakBtn').addEventListener('click',()=>{
+  if(!('speechSynthesis' in window)){ toast('Voice not supported on this device.'); return; }
+  const c=cementCalc;
+  const text = `Repair report. Priority: ${state.priority}. Length ${state.lengthCm.toFixed(1)} centimeters, width ${state.widthCm.toFixed(1)} centimeters, depth ${state.depthCm.toFixed(1)} centimeters. Estimated volume ${(state.volumeCm3/1000).toFixed(2)} liters. You will need approximately ${c.cementBags.toFixed(1)} bags of cement, ${c.sandCft.toFixed(1)} cubic feet of sand, and ${c.aggCft.toFixed(1)} cubic feet of aggregate, at an estimated cost of ${c.cost.toFixed(0)} rupees.`;
+  const u=new SpeechSynthesisUtterance(text);
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+});
+
+function ensureJsPDF(){
+  return new Promise((resolve,reject)=>{
+    if(window.jspdf && window.jspdf.jsPDF){ resolve(); return; }
+    // library tag may still be loading (slow connection) — wait briefly, then try a fallback load
+    let tries=0;
+    const poll=setInterval(()=>{
+      tries++;
+      if(window.jspdf && window.jspdf.jsPDF){ clearInterval(poll); resolve(); return; }
+      if(tries>20){
+        clearInterval(poll);
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        s.onload=()=> (window.jspdf && window.jspdf.jsPDF) ? resolve() : reject(new Error('PDF library failed to initialize.'));
+        s.onerror=()=>reject(new Error('Could not load the PDF library — check your internet connection.'));
+        document.head.appendChild(s);
+      }
+    },150);
+  });
+}
+
+document.getElementById('pdfBtn').addEventListener('click', async ()=>{
+  const btn=document.getElementById('pdfBtn');
+  const originalLabel=btn.textContent;
+  btn.textContent='⏳ Generating…'; btn.style.pointerEvents='none';
+  try{
+    await ensureJsPDF();
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF({unit:'pt',format:'a4'});
+    const c=cementCalc;
+    const PAGE_W=595.28, PAGE_H=841.89, MARGIN=42;
+    const COLOR_HAZARD=[226,87,43], COLOR_STEEL=[47,92,110], COLOR_TAPE=[240,180,41];
+    const COLOR_DARK=[36,34,32], COLOR_GREY=[110,105,96], COLOR_LINE=[224,220,212];
+    const priorityColor = state.priority==='Low'?[76,140,87]:state.priority==='Medium'?[217,154,43]:[194,68,68];
+
+    let y=0, page=1;
+    function newPage(){
+      drawFooter();
+      doc.addPage(); page++;
+      y=MARGIN;
+    }
+    function ensureSpace(h){
+      if(y+h > PAGE_H-56){ newPage(); }
+    }
+    function drawFooter(){
+      doc.setDrawColor(...COLOR_LINE); doc.setLineWidth(0.6);
+      doc.line(MARGIN, PAGE_H-40, PAGE_W-MARGIN, PAGE_H-40);
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...COLOR_GREY);
+      doc.text('Darshan Cement AI — estimates are guidance only. Verify structural repairs with a qualified engineer.', MARGIN, PAGE_H-26);
+      doc.text('Page '+page, PAGE_W-MARGIN-30, PAGE_H-26);
+    }
+    function sectionTitle(label){
+      ensureSpace(30);
+      doc.setFillColor(...COLOR_HAZARD);
+      doc.rect(MARGIN, y, 4, 16, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(...COLOR_DARK);
+      doc.text(label, MARGIN+12, y+12);
+      y+=30;
+    }
+    function kvRow(k,v,x,w){
+      doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(...COLOR_GREY);
+      doc.text(k, x, y);
+      doc.setFont('helvetica','bold'); doc.setTextColor(...COLOR_DARK);
+      doc.text(String(v), x+w, y);
+      y+=17;
+    }
+
+    // ---- Header band ----
+    doc.setFillColor(...COLOR_DARK);
+    doc.rect(0,0,PAGE_W,86,'F');
+    doc.setFillColor(...COLOR_HAZARD);
+    doc.rect(0,82,PAGE_W,4,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(22); doc.setTextColor(255,255,255);
+    doc.text('Darshan Cement AI — Repair Report', MARGIN, 40);
+    doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(220,220,220);
+    doc.text('Generated '+new Date().toLocaleString(), MARGIN, 60);
+    if(state.gps){
+      doc.text(`GPS: ${state.gps.lat.toFixed(5)}, ${state.gps.lon.toFixed(5)}`, PAGE_W-MARGIN-180, 60, {align:'left'});
+    }
+    // priority chip top-right
+    doc.setFillColor(...priorityColor);
+    const chipW=120;
+    doc.roundedRect(PAGE_W-MARGIN-chipW, 26, chipW, 24, 5, 5, 'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(255,255,255);
+    doc.text(state.priority+' Priority', PAGE_W-MARGIN-chipW+chipW/2, 42, {align:'center'});
+
+    y=110;
+
+    // ---- Photo + measurements ----
+    sectionTitle('Detected Region & Measurements');
+    const rc=document.getElementById('reportCanvas');
+    const imgData = rc.toDataURL('image/jpeg',0.88);
+    const imgW=230, imgH=rc.height*(imgW/rc.width);
+    doc.setDrawColor(...COLOR_LINE); doc.setLineWidth(1);
+    doc.addImage(imgData,'JPEG',MARGIN,y,imgW,imgH);
+    doc.rect(MARGIN,y,imgW,imgH);
+
+    const tx=MARGIN+imgW+26, tw=PAGE_W-MARGIN-tx-40;
+    const savedY=y;
+    [
+      ['Length', state.lengthCm.toFixed(1)+' cm'],
+      ['Width', state.widthCm.toFixed(1)+' cm'],
+      ['Depth', state.depthCm.toFixed(1)+' cm'],
+      ['Surface Area', state.areaCm2.toFixed(0)+' cm\u00B2'],
+      ['Volume', (state.volumeCm3/1000).toFixed(2)+' L'],
+      ['Mix Grade', MIXES[state.mix].label],
+      ['Est. Repair Time', document.getElementById('repairTime').textContent],
+    ].forEach(([k,v])=>{ doc.text(k, tx, y+12); doc.setFont('helvetica','bold'); doc.text(String(v), tx+tw-doc.getTextWidth(String(v)), y+12); doc.setFont('helvetica','normal'); y+=19; });
+    y = Math.max(savedY+imgH, y) + 26;
+
+    // ---- Material requirement table ----
+    sectionTitle('Material Requirement — '+MIXES[state.mix].label);
+    doc.setFontSize(10.5);
+    const rows=[
+      ['Cement', `${c.cementBags.toFixed(2)} bags`, `${c.cementKg.toFixed(1)} kg`, COLOR_TAPE],
+      ['Sand', `${c.sandCft.toFixed(2)} cu.ft`, `${c.sandKg.toFixed(1)} kg`, COLOR_STEEL],
+      ['Aggregate', `${c.aggCft.toFixed(2)} cu.ft`, `${c.aggKg.toFixed(1)} kg`, COLOR_GREY],
+    ];
+    const maxAmt = Math.max(c.cementKg,c.sandKg,c.aggKg,1);
+    rows.forEach(([name,amt,kg,col])=>{
+      ensureSpace(24);
+      doc.setFillColor(...col); doc.circle(MARGIN+4,y-3,3,'F');
+      doc.setFont('helvetica','bold'); doc.setTextColor(...COLOR_DARK); doc.text(name, MARGIN+14, y);
+      // bar
+      const barX=MARGIN+110, barW=200, barH=8;
+      doc.setFillColor(...COLOR_LINE); doc.rect(barX, y-9, barW, barH, 'F');
+      const kgVal = name==='Cement'?c.cementKg:name==='Sand'?c.sandKg:c.aggKg;
+      doc.setFillColor(...col); doc.rect(barX, y-9, barW*Math.min(1,kgVal/maxAmt), barH, 'F');
+      doc.setFont('helvetica','normal'); doc.setTextColor(...COLOR_GREY);
+      doc.text(`${amt}  (${kg})`, barX+barW+12, y);
+      y+=26;
+    });
+    ensureSpace(30);
+    doc.setDrawColor(...COLOR_LINE); doc.line(MARGIN, y, PAGE_W-MARGIN, y); y+=20;
+    doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(...COLOR_DARK);
+    doc.text('Estimated Total Cost', MARGIN, y);
+    doc.setTextColor(...COLOR_HAZARD);
+    const costStr='\u20B9'+c.cost.toFixed(0);
+    doc.text(costStr, PAGE_W-MARGIN-doc.getTextWidth(costStr), y);
+    y+=34;
+
+    // ---- Recommendations ----
+    sectionTitle('AI Recommendations');
+    const recLines = Array.from(document.querySelectorAll('#recommendBox li')).map(li=>li.textContent);
+    doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(...COLOR_DARK);
+    recLines.forEach(line=>{
+      const wrapped = doc.splitTextToSize('•  '+line, PAGE_W-MARGIN*2-6);
+      ensureSpace(wrapped.length*14+6);
+      wrapped.forEach(w=>{ doc.text(w, MARGIN, y); y+=14; });
+      y+=6;
+    });
+
+    drawFooter();
+    doc.save('darshan-cement-ai-report-'+Date.now()+'.pdf');
+    toast('PDF downloaded.');
+  }catch(err){
+    toast('PDF export failed — '+err.message);
+  }finally{
+    btn.textContent=originalLabel; btn.style.pointerEvents='auto';
+  }
+});
+
+document.getElementById('newMeasureBtn').addEventListener('click',()=>{
+  state.polygon=[]; state.calibPoints=[]; state.img=null;
+  goToStep(1);
+});
+
+/* ======================================================================
+   HISTORY (persistent storage)
+====================================================================== */
+document.getElementById('saveHistBtn').addEventListener('click', saveToHistory);
+
+async function saveToHistory(){
+  try{
+    const rc=document.getElementById('reportCanvas');
+    const thumbCanvas=document.createElement('canvas');
+    const tw=240; const th=Math.round(rc.height*(tw/rc.width));
+    thumbCanvas.width=tw; thumbCanvas.height=th;
+    thumbCanvas.getContext('2d').drawImage(rc,0,0,tw,th);
+    const thumb=thumbCanvas.toDataURL('image/jpeg',0.6);
+
+    const entry={
+      id:'entry_'+Date.now(),
+      date:new Date().toISOString(),
+      thumb,
+      lengthCm:state.lengthCm, widthCm:state.widthCm, areaCm2:state.areaCm2,
+      depthCm:state.depthCm, volumeCm3:state.volumeCm3,
+      mix:state.mix, priority:state.priority, cost:cementCalc.cost,
+      gps:state.gps,
+    };
+    await window.storage.set(entry.id, JSON.stringify(entry), false);
+    toast('Saved to history.');
+  }catch(err){
+    toast('Could not save — storage error.');
+  }
+}
+
+async function renderHistory(){
+  const grid=document.getElementById('historyGrid');
+  grid.innerHTML = `<div class="hist-empty">Loading reports <span class="loader-dot"></span></div>`;
+  try{
+    const list = await window.storage.list('entry_', false);
+    const keys = (list && list.keys) ? list.keys : [];
+    if(keys.length===0){
+      grid.innerHTML = `<div class="hist-empty">No saved reports yet. Measure a hole and tap <b>Save to History</b> to see it here.</div>`;
+      return;
+    }
+    const entries=[];
+    for(const k of keys){
+      try{
+        const res = await window.storage.get(k, false);
+        if(res && res.value) entries.push(JSON.parse(res.value));
+      }catch(e){ /* skip missing */ }
+    }
+    entries.sort((a,b)=> new Date(b.date)-new Date(a.date));
+    window._historyCache=entries;
+    paintHistory(entries);
+  }catch(err){
+    grid.innerHTML = `<div class="hist-empty">Could not load history yet — save a report first.</div>`;
+  }
+}
+function paintHistory(entries){
+  const grid=document.getElementById('historyGrid');
+  const q=(document.getElementById('histSearch').value||'').toLowerCase();
+  const f=document.getElementById('histFilter').value;
+  const filtered = entries.filter(e=>{
+    const matchesQ = !q || (e.date && e.date.toLowerCase().includes(q)) || (e.mix && e.mix.toLowerCase().includes(q));
+    const matchesF = f==='all' || e.priority===f;
+    return matchesQ && matchesF;
+  });
+  if(filtered.length===0){
+    grid.innerHTML = `<div class="hist-empty">No reports match your search/filter.</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(e=>{
+    const badgeClass = e.priority==='Low'?'badge-low':e.priority==='Medium'?'badge-med':'badge-high';
+    return `<div class="hist-card">
+      <img src="${e.thumb}" alt="hole">
+      <div class="hc-body">
+        <div class="hc-date">${new Date(e.date).toLocaleString()}</div>
+        <h4>${e.mix} · <span class="badge ${badgeClass}" style="font-size:10px;">${e.priority}</span></h4>
+        <div class="hc-stats">
+          <span>${e.lengthCm.toFixed(1)}×${e.widthCm.toFixed(1)} cm</span>
+          <span>${(e.volumeCm3/1000).toFixed(1)} L</span>
+        </div>
+        <div class="hc-stats"><span>₹${(e.cost||0).toFixed(0)} est. cost</span>${e.gps?`<span>📍 tagged</span>`:''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+document.getElementById('histSearch').addEventListener('input', ()=> paintHistory(window._historyCache||[]));
+document.getElementById('histFilter').addEventListener('change', ()=> paintHistory(window._historyCache||[]));
+document.getElementById('histRefresh').addEventListener('click', renderHistory);
+
+/* init */
+goToStep(1);
+</script>
+</body>
+</html>
